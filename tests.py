@@ -7,39 +7,22 @@ from typing import Callable, Any
 
 class MyCrossBackward:
 
-    def __init__(self, *args, backward_function : Callable[..., None], name : str) -> None:
-        
+def __init__(self,
+                 data : list | np.ndarray | float | int,
+                 dtype : np.dtype = None,
+                 requires_grad : bool = False,
+                 crossOpBack : MyCrossBackward = None) -> None:
         self.__data = list(args)
         self.__bf = backward_function
         self.__name = name
-
-    """ Private """
-
-    def __str__(self) -> str:
-        return self.__name
-    
-    def __call__(self, x) -> Any:
-        """
-            This method is called when calling the model with the () operation.
-            Ex:
-                bcw = MyCrossBackward(...)
-                bcw(x) <- called here
-        """
-
-        return self.run(x)
-    
-    """ Public """
-    
-    def run(self, base) -> None:
-        """run the backward operation
-
-        Args:
-            base (MyTensor): basicly the tensor accumulating gradients
-
-        Returns:
-            None: nothing
-        """
-        return self.__bf(base, *self.__data)
+        self.__data : np.ndarray = data
+        if (isinstance(data, list)):
+            self.__data = np.array(self.__data)
+        elif isinstance(data, float) or isinstance(data, int): self.__data = np.array([self.__data])
+        self.dtype = dtype
+        self.requires_grad = requires_grad
+        self.grad = None
+        self.backward_op = crossOpBack
 
 class CorrectTensor:
 
